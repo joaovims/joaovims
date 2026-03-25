@@ -1,0 +1,26 @@
+## Arquivos gerados por compilação e execução
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+
+## Pastas de ambiente/IDE
+.vs/
+.vscode/
+.idea/
+
+## Arquivos de configuração de pacotes
+packages/
+*.nupkg
+
+## Gerados por ferramentas
+*.suo
+*.user
+*.dbmdl
+*.jfm
+*.log
+
+## Outros
+.DS_Store
+Thumbs.db
