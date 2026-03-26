@@ -47,14 +47,22 @@ namespace RetroagirNfEntrada.Services
 
                 if (await reader.ReadAsync())
                 {
+                    int ordNumero     = reader.GetOrdinal("numero_nf_transferencia");
+                    int ordFilial     = reader.GetOrdinal("filial");
+                    int ordOrigem     = reader.GetOrdinal("filial_origem");
+                    int ordValor      = reader.GetOrdinal("valor_total");
+                    int ordQtde       = reader.GetOrdinal("qtde_total");
+                    int ordEmissao    = reader.GetOrdinal("emissao");
+                    int ordEntrada    = reader.GetOrdinal("data_entrada_conferida");
+
                     return new NotaFiscal(
-                        reader.GetInt32(reader.GetOrdinal("numero_nf_transferencia")),
-                        reader.GetString(reader.GetOrdinal("filial")),
-                        reader.GetString(reader.GetOrdinal("filial_origem")),
-                        reader.GetDecimal(reader.GetOrdinal("valor_total")),
-                        reader.GetInt32(reader.GetOrdinal("qtde_total")),
-                        reader.GetDateTime(reader.GetOrdinal("emissao")),
-                        reader.GetDateTime(reader.GetOrdinal("data_entrada_conferida")));
+                        reader.GetInt32(ordNumero),
+                        reader.IsDBNull(ordFilial)  ? string.Empty : reader.GetString(ordFilial),
+                        reader.IsDBNull(ordOrigem)  ? string.Empty : reader.GetString(ordOrigem),
+                        reader.IsDBNull(ordValor)   ? 0m           : reader.GetDecimal(ordValor),
+                        reader.IsDBNull(ordQtde)    ? 0            : reader.GetInt32(ordQtde),
+                        reader.IsDBNull(ordEmissao) ? DateTime.MinValue : reader.GetDateTime(ordEmissao),
+                        reader.IsDBNull(ordEntrada) ? DateTime.MinValue : reader.GetDateTime(ordEntrada));
                 }
 
                 return null;

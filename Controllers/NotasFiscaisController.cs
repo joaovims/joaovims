@@ -7,10 +7,12 @@ namespace RetroagirNfEntrada.Controllers
     public class NotasFiscaisController : Controller
     {
         private readonly INotaFiscalService _notaFiscalService;
-        
-        public NotasFiscaisController(INotaFiscalService notaFiscalService)
+        private readonly IWebHostEnvironment _env;
+
+        public NotasFiscaisController(INotaFiscalService notaFiscalService, IWebHostEnvironment env)
         {
             _notaFiscalService = notaFiscalService;
+            _env = env;
         }
 
         [HttpGet]
@@ -50,11 +52,11 @@ namespace RetroagirNfEntrada.Controllers
                     data = notaFiscal 
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Json(new {
                     success = false,
-                    message = "Erro interno do servidor. Contate o suporte."
+                    message = _env.IsDevelopment() ? ex.Message : "Erro interno do servidor. Contate o suporte."
                 });
             }
         }
@@ -97,11 +99,11 @@ namespace RetroagirNfEntrada.Controllers
                     });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Json(new {
                     success = false,
-                    message = "Erro interno do servidor. Contate o suporte."
+                    message = _env.IsDevelopment() ? ex.Message : "Erro interno do servidor. Contate o suporte."
                 });
             }
         }
