@@ -1,4 +1,4 @@
-namespace RetroagirEntradas.Models;
+namespace RetroagirNfEntrada.Models;
 
 public class ErrorViewModel
 {

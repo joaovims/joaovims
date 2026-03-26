@@ -1,4 +1,4 @@
-﻿@model RetroagirNfEntrada.Models.BuscaNotaFiscalViewModel
+@model RetroagirNfEntrada.Models.BuscaNotaFiscalViewModel
 @{
     ViewData["Title"] = "Retroação de Notas Fiscais";
 }
@@ -68,7 +68,7 @@
                                                 <td id="dadosFilial"></td>
                                             </tr>
                                             <tr>
-                                                <th>Fornecedor:</th>
+                                                <th>Filial Origem:</th>
                                                 <td id="dadosFilialOrigem"></td>
                                             </tr>
                                             <tr>
@@ -84,17 +84,13 @@
                                                 <td id="dadosValorTotal"></td>
                                             </tr>
                                             <tr>
-                                                <th>Valor QuantidadeTotal Total:</th>
+                                                <th>Quantidade Total:</th>
                                                 <td id="dadosQuantidadeTotal"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Status:</th>
-                                                <td id="dadosStatus"></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
                                 <div class="mt-3">
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalRetroacao">
                                         <i class="fas fa-clock"></i> Retroagir Nota
@@ -125,11 +121,13 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
+
             <form id="formRetroacao">
                 <div class="modal-body">
-                    <input type="hidden" id="notaFiscalId" name="NotaFiscalId">
-                    
+                    <input type="hidden" id="hdnNumeroNf" name="NumeroNfTransferencia">
+                    <input type="hidden" id="hdnFilial" name="Filial">
+                    <input type="hidden" id="hdnFilialOrigem" name="FilialOrigem">
+
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle"></i>
                         <strong>Atenção:</strong> Esta ação irá alterar as datas da nota fiscal no banco de dados.
@@ -145,7 +143,7 @@
                         <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida" required>
                     </div>
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times"></i> Cancelar
@@ -158,7 +156,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/js/notas-fiscais.js"></script>
-}

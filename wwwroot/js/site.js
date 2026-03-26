@@ -1,4 +1,4 @@
-﻿$(document).ready(function() {
+$(document).ready(function() {
     let notaFiscalAtual = null;
 
     // Submissão do formulário de busca
@@ -14,10 +14,11 @@
     });
 
     function buscarNotaFiscal() {
-        const numeroNota = $('#NumeroNota').val().trim();
-        const filial = $('#Filial').val();
+        const numeroNota = $('#NumeroNfTransferencia').val().trim();
+        const filial = $('#Filial').val().trim();
+        const filialOrigem = $('#FilialOrigem').val().trim();
 
-        if (!numeroNota || !filial) {
+        if (!numeroNota || !filial || !filialOrigem) {
             mostrarErro('Preencha todos os campos de busca.');
             return;
         }
@@ -30,12 +31,13 @@
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                numeroNota: numeroNota,
-                filial: parseInt(filial)
+                numeroNfTransferencia: parseInt(numeroNota),
+                filial: parseInt(filial),
+                filialOrigem: parseInt(filialOrigem)
             }),
             success: function(response) {
                 ocultarLoading();
-                
+
                 if (response.success) {
                     notaFiscalAtual = response.data;
                     exibirResultado(response.data);
@@ -51,23 +53,27 @@
     }
 
     function exibirResultado(notaFiscal) {
-        $('#dadosNumeroNota').text(notaFiscal.numeroNota);
+        $('#dadosNumeroNfTransferencia').text(notaFiscal.numeroNfTransferencia);
         $('#dadosFilial').text(notaFiscal.filial);
-        $('#dadosFornecedor').text(notaFiscal.fornecedor);
+        $('#dadosFilialOrigem').text(notaFiscal.filialOrigem);
         $('#dadosEmissao').text(formatarData(notaFiscal.emissao));
         $('#dadosDataEntrada').text(formatarData(notaFiscal.dataEntradaConferida));
         $('#dadosValorTotal').text(formatarMoeda(notaFiscal.valorTotal));
-        $('#dadosStatus').text(notaFiscal.status);
-        
-        // Preenche o ID no modal
-        $('#notaFiscalId').val(notaFiscal.id);
-        
+        $('#dadosQuantidadeTotal').text(notaFiscal.qtdeTotal);
+
+        // Preenche os campos hidden no modal
+        $('#hdnNumeroNf').val(notaFiscal.numeroNfTransferencia);
+        $('#hdnFilial').val(notaFiscal.filial);
+        $('#hdnFilialOrigem').val(notaFiscal.filialOrigem);
+
         $('#resultadoBusca').removeClass('d-none');
     }
 
     function retroagirNota() {
         const formData = {
-            notaFiscalId: parseInt($('#notaFiscalId').val()),
+            numeroNfTransferencia: parseInt($('#hdnNumeroNf').val()),
+            filial: parseInt($('#hdnFilial').val()),
+            filialOrigem: parseInt($('#hdnFilialOrigem').val()),
             emissao: $('#novaEmissao').val(),
             dataEntradaConferida: $('#novaDataEntrada').val()
         };
@@ -81,7 +87,7 @@
             data: JSON.stringify(formData),
             success: function(response) {
                 $('#btnConfirmarRetroacao').prop('disabled', false).html('<i class="fas fa-clock"></i> Confirmar Retroação');
-                
+
                 if (response.success) {
                     $('#modalRetroacao').modal('hide');
                     mostrarSucesso(response.message);
@@ -136,9 +142,9 @@
     }
 
     function formatarMoeda(valor) {
-        return new Intl.NumberFormat('pt-BR', { 
-            style: 'currency', 
-            currency: 'BRL' 
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
         }).format(valor);
     }
 

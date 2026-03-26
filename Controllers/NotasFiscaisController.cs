@@ -50,12 +50,11 @@ namespace RetroagirNfEntrada.Controllers
                     data = notaFiscal 
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { 
-                    success = false, 
-                    message = "Erro interno do servidor",
-                    error = ex.Message 
+                return Json(new {
+                    success = false,
+                    message = "Erro interno do servidor. Contate o suporte."
                 });
             }
         }
@@ -76,8 +75,10 @@ namespace RetroagirNfEntrada.Controllers
                 }
 
                 var sucesso = await _notaFiscalService.AtualizarDatasAsync(
-                    model.NotaFiscalId, 
-                    model.Emissao, 
+                    model.NumeroNfTransferencia,
+                    model.Filial,
+                    model.FilialOrigem,
+                    model.Emissao,
                     model.DataEntradaConferida
                 );
 
@@ -96,12 +97,11 @@ namespace RetroagirNfEntrada.Controllers
                     });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { 
-                    success = false, 
-                    message = "Erro interno do servidor",
-                    error = ex.Message 
+                return Json(new {
+                    success = false,
+                    message = "Erro interno do servidor. Contate o suporte."
                 });
             }
         }
