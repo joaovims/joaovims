@@ -3,156 +3,461 @@
     ViewData["Title"] = "Retroação de Notas Fiscais";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">
-                        <i class="fas fa-file-invoice"></i> Retroação de Notas Fiscais
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <!-- Formulário de Busca -->
-                    <form id="formBusca" class="row g-3">
-                        <div class="col-md-6">
-                            <label asp-for="NumeroNfTransferencia" class="form-label"></label>
-                            <input asp-for="NumeroNfTransferencia" class="form-control" placeholder="Digite o número da nota fiscal">
-                            <span asp-validation-for="NumeroNfTransferencia" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="Filial" class="form-label"></label>
-                            <input asp-for="Filial" class="form-control" type="text" placeholder="Ex: Filial">
-                            <span asp-validation-for="Filial" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="FilialOrigem" class="form-label"></label>
-                            <input asp-for="FilialOrigem" class="form-control" type="text" placeholder="Ex: Filial Origem">
-                            <span asp-validation-for="FilialOrigem" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                        </div>
-                    </form>
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #1a3c5e 0%, #2d6a9f 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 4px 20px rgba(29, 60, 94, 0.25);
+    }
 
-                    <hr>
+    .page-header .icon-wrap {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-                    <!-- Loading -->
-                    <div id="loading" class="text-center d-none">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Carregando...</span>
-                        </div>
-                        <p class="mt-2">Buscando nota fiscal...</p>
-                    </div>
+    .section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #6b7280;
+        margin-bottom: 1.1rem;
+    }
 
-                    <!-- Resultado da Busca -->
-                    <div id="resultadoBusca" class="d-none">
-                        <div class="alert alert-info">
-                            <h5><i class="fas fa-info-circle"></i> Nota Fiscal Encontrada</h5>
-                            <p class="mb-2">Confira os dados abaixo antes de prosseguir com a retroação:</p>
-                        </div>
+    .nf-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+    }
 
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <th width="30%">Número da Nota:</th>
-                                                <td id="dadosNumeroNfTransferencia"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Filial:</th>
-                                                <td id="dadosFilial"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Filial Origem:</th>
-                                                <td id="dadosFilialOrigem"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Data de Emissão Atual:</th>
-                                                <td id="dadosEmissao"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Data Entrada Conferida Atual:</th>
-                                                <td id="dadosDataEntrada"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Valor Total:</th>
-                                                <td id="dadosValorTotal"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Quantidade Total:</th>
-                                                <td id="dadosQuantidadeTotal"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+    .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: #374151;
+        margin-bottom: 0.4rem;
+    }
 
-                                <div class="mt-3">
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalRetroacao">
-                                        <i class="fas fa-clock"></i> Retroagir Nota
-                                    </button>
-                                    <button type="button" class="btn btn-secondary ms-2" onclick="limparResultado()">
-                                        <i class="fas fa-times"></i> Nova Busca
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    .required-mark {
+        color: #dc3545;
+        margin-left: 2px;
+    }
 
-                    <!-- Mensagens de Erro -->
-                    <div id="mensagemErro" class="alert alert-danger d-none"></div>
-                </div>
+    .form-control, .form-select {
+        border-radius: 8px;
+        border-color: #d1d5db;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+        color: #1f2937;
+        transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .form-control:focus {
+        border-color: #2d6a9f;
+        box-shadow: 0 0 0 3px rgba(45, 106, 159, 0.14);
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+        font-size: 0.85rem;
+    }
+
+    .btn-buscar {
+        background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.8rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+        color: white;
+        transition: all 0.2s ease;
+    }
+
+    .btn-buscar:hover, .btn-buscar:focus {
+        background: linear-gradient(135deg, #153252, #255e8f);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(45, 106, 159, 0.4);
+    }
+
+    .btn-buscar:active {
+        transform: translateY(0);
+    }
+
+    .data-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        height: 100%;
+        transition: border-color 0.15s;
+    }
+
+    .data-item:hover {
+        border-color: #c3d4e8;
+    }
+
+    .data-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #9ca3af;
+        margin-bottom: 0.25rem;
+    }
+
+    .data-value {
+        font-size: 0.975rem;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .result-banner {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid #2563eb;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .divider {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 1.25rem 0;
+    }
+
+    .loading-wrap {
+        padding: 3.5rem 0;
+    }
+
+    .btn-retroagir {
+        background: linear-gradient(135deg, #92400e, #d97706);
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.6rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+        transition: all 0.2s ease;
+    }
+
+    .btn-retroagir:hover, .btn-retroagir:focus {
+        background: linear-gradient(135deg, #78350f, #b45309);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(180, 83, 9, 0.4);
+    }
+
+    .btn-retroagir:active {
+        transform: translateY(0);
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    }
+
+    .modal-header-warn {
+        background: linear-gradient(135deg, #78350f, #b45309);
+        color: white;
+        border-radius: 14px 14px 0 0;
+        padding: 1.1rem 1.5rem;
+    }
+
+    .modal-footer {
+        background: #f9fafb;
+        border-radius: 0 0 14px 14px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .hint-text {
+        font-size: 0.78rem;
+        color: #9ca3af;
+    }
+
+    .tooltip-icon {
+        color: #9ca3af;
+        font-size: 0.78rem;
+        margin-left: 4px;
+        cursor: help;
+        vertical-align: middle;
+        transition: color 0.15s;
+    }
+
+    .tooltip-icon:hover {
+        color: #2d6a9f;
+    }
+</style>
+
+<!-- Cabeçalho da Página -->
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-wrap">
+                <i class="fas fa-file-invoice fa-xl" style="color: rgba(255,255,255,0.95)"></i>
+            </div>
+            <div>
+                <h4 class="mb-1 fw-bold">Retroação de Notas Fiscais</h4>
+                <p class="mb-0 small" style="opacity: 0.75;">
+                    Consulte e atualize a data de entrada de notas fiscais de transferência
+                </p>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- Card de Busca -->
+    <div class="card nf-card mb-4">
+        <div class="card-body p-4">
+
+            <p class="section-label">
+                <i class="fas fa-magnifying-glass me-1"></i> Critérios de Busca
+            </p>
+
+            <form id="formBusca">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="NumeroNfTransferencia" class="form-label">
+                            Número da Nota Fiscal <span class="required-mark">*</span>
+                            <i class="fas fa-circle-info tooltip-icon"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Informe o número inteiro da NF de transferência. Apenas dígitos são aceitos. Ex: 123456"></i>
+                        </label>
+                        <input asp-for="NumeroNfTransferencia"
+                               class="form-control"
+                               placeholder="Digite o número da NF" />
+                        <span asp-validation-for="NumeroNfTransferencia" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Filial" class="form-label">
+                            Filial <span class="required-mark">*</span>
+                            <i class="fas fa-circle-info tooltip-icon"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Informe o código ou nome exato da filial de destino conforme cadastrado no sistema. Ex: RSV RJ-NORTE SHOPPING"></i>
+                        </label>
+                        <input asp-for="Filial"
+                               class="form-control"
+                               type="text"
+                               placeholder="Digite a filial" />
+                        <span asp-validation-for="Filial" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="FilialOrigem" class="form-label">
+                            Filial de Origem <span class="required-mark">*</span>
+                            <i class="fas fa-circle-info tooltip-icon"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Informe o nome da filial de origem."></i>
+                        </label>
+                        <input asp-for="FilialOrigem"
+                               class="form-control"
+                               type="text"
+                               placeholder="Digite a filial de origem" />
+                        <span asp-validation-for="FilialOrigem" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mt-4 pt-1">
+                    <span class="hint-text">
+                        <span class="required-mark">*</span> Campos obrigatórios
+                    </span>
+                    <button type="submit" class="btn btn-buscar">
+                        <i class="fas fa-search me-2"></i> Buscar Nota Fiscal
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <div id="mensagemErro" class="alert alert-danger d-none rounded-3 mb-4" role="alert"></div>
+
+    <!-- Loading -->
+    <div id="loading" class="text-center loading-wrap d-none">
+        <div class="spinner-border text-primary" style="width:2.5rem; height:2.5rem;" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-3 text-muted fw-medium small">Buscando nota fiscal, aguarde...</p>
+    </div>
+
+    <!-- Resultado da Busca -->
+    <div id="resultadoBusca" class="d-none">
+
+        <!-- Banner de sucesso -->
+        <div class="result-banner d-flex align-items-center gap-3">
+            <i class="fas fa-circle-check fa-lg" style="color:#2563eb; flex-shrink:0;"></i>
+            <div>
+                <strong style="color:#1e3a5f;">Nota Fiscal Encontrada</strong>
+                <span class="d-block small mt-1" style="color:#3b5f8a;">
+                    Confira os dados abaixo. Utilize o botão <strong>Retroagir Nota Fiscal</strong> para prosseguir.
+                </span>
+            </div>
+        </div>
+
+        <div class="card nf-card">
+            <div class="card-body p-4">
+
+                <!-- Identificação -->
+                <p class="section-label">
+                    <i class="fas fa-file-lines me-1"></i> Identificação
+                </p>
+                <div class="row g-3 mb-1">
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Número da Nota</div>
+                            <div class="data-value" id="dadosNumeroNfTransferencia">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Filial</div>
+                            <div class="data-value" id="dadosFilial">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Filial Origem</div>
+                            <div class="data-value" id="dadosFilialOrigem">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Datas -->
+                <p class="section-label">
+                    <i class="fas fa-calendar-days me-1"></i> Datas Atuais
+                </p>
+                <div class="row g-3 mb-1">
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Data de Emissão</div>
+                            <div class="data-value" id="dadosEmissao">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Data Entrada Conferida</div>
+                            <div class="data-value" id="dadosDataEntrada">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Financeiro -->
+                <p class="section-label">
+                    <i class="fas fa-receipt me-1"></i> Financeiro
+                </p>
+                <div class="row g-3 mb-1">
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Valor Total</div>
+                            <div class="data-value" id="dadosValorTotal">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="data-item">
+                            <div class="data-label">Quantidade Total</div>
+                            <div class="data-value" id="dadosQuantidadeTotal">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="d-flex justify-content-end gap-2 pt-3 mt-2 border-top">
+                    <button type="button" class="btn btn-outline-secondary" onclick="limparResultado()">
+                        <i class="fas fa-arrow-left me-2"></i> Nova Busca
+                    </button>
+                    <button type="button" class="btn btn-retroagir" data-bs-toggle="modal" data-bs-target="#modalRetroacao">
+                        <i class="fas fa-clock me-2"></i> Retroagir Nota Fiscal
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
 
 <!-- Modal de Retroação -->
 <div class="modal fade" id="modalRetroacao" tabindex="-1" aria-labelledby="modalRetroacao" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-clock"></i> Retroação de Nota Fiscal
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            <div class="modal-header modal-header-warn">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <h5 class="modal-title mb-0 fw-semibold">Confirmar Retroação</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
 
             <form id="formRetroacao">
-                <div class="modal-body">
+                <div class="modal-body p-4">
+
                     <input type="hidden" id="hdnNumeroNf" name="NumeroNfTransferencia">
                     <input type="hidden" id="hdnFilial" name="Filial">
                     <input type="hidden" id="hdnFilialOrigem" name="FilialOrigem">
 
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Atenção:</strong> Esta ação irá alterar as datas da nota fiscal no banco de dados.
+                    <div class="alert alert-warning rounded-3 d-flex gap-3 mb-4 small">
+                        <i class="fas fa-circle-exclamation mt-1 flex-shrink-0"></i>
+                        <span>
+                            Esta ação irá <strong>alterar permanentemente</strong> as datas da
+                            nota fiscal no banco de dados. Verifique os valores antes de confirmar.
+                        </span>
                     </div>
 
                     <div class="mb-3">
-                        <label for="novaEmissao" class="form-label">Nova Data de Emissão</label>
+                        <label for="novaEmissao" class="form-label">
+                            Nova Data de Emissão <span class="required-mark">*</span>
+                        </label>
                         <input type="date" class="form-control" id="novaEmissao" name="Emissao" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="novaDataEntrada" class="form-label">Nova Data Entrada Conferida</label>
+                    <div class="mb-1">
+                        <label for="novaDataEntrada" class="form-label">
+                            Nova Data Entrada Conferida <span class="required-mark">*</span>
+                        </label>
                         <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida" required>
                     </div>
+
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i> Cancelar
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-xmark me-2"></i> Cancelar
                     </button>
-                    <button type="submit" class="btn btn-warning" id="btnConfirmarRetroacao">
-                        <i class="fas fa-clock"></i> Confirmar Retroação
+                    <button type="submit" class="btn btn-retroagir" id="btnConfirmarRetroacao">
+                        <i class="fas fa-clock me-2"></i> Confirmar Retroação
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+            new bootstrap.Tooltip(el, { trigger: 'hover focus' });
+        });
+    });
+</script>
