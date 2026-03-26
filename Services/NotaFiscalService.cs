@@ -14,7 +14,7 @@ namespace RetroagirNfEntrada.Services
             _logger = logger;
         }
 
-        public async Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(int numeroNfTransferencia, int filial, int filialOrigem)
+        public async Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(int numeroNfTransferencia, string filial, string filialOrigem)
         {
             try
             {
@@ -49,8 +49,8 @@ namespace RetroagirNfEntrada.Services
                 {
                     return new NotaFiscal(
                         reader.GetInt32(reader.GetOrdinal("numero_nf_transferencia")),
-                        reader.GetInt32(reader.GetOrdinal("filial")),
-                        reader.GetInt32(reader.GetOrdinal("filial_origem")),
+                        reader.GetString(reader.GetOrdinal("filial")),
+                        reader.GetString(reader.GetOrdinal("filial_origem")),
                         reader.GetDecimal(reader.GetOrdinal("valor_total")),
                         reader.GetInt32(reader.GetOrdinal("qtde_total")),
                         reader.GetDateTime(reader.GetOrdinal("emissao")),
@@ -67,7 +67,7 @@ namespace RetroagirNfEntrada.Services
         }
 
         public async Task<bool> AtualizarDatasAsync(
-            int numeroNfTransferencia, int filial, int filialOrigem,
+            int numeroNfTransferencia, string filial, string filialOrigem,
             DateTime emissao, DateTime dataEntradaConferida)
         {
             try

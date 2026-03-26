@@ -4,7 +4,7 @@ namespace RetroagirNfEntrada.Services
 {
     public interface INotaFiscalService
     {
-        Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(int numeroNfTransferencia, int filial, int filialOrigem);
-        Task<bool> AtualizarDatasAsync(int numeroNfTransferencia, int filial, int filialOrigem, DateTime emissao, DateTime dataEntradaConferida);
+        Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(int numeroNfTransferencia, string filial, string filialOrigem);
+        Task<bool> AtualizarDatasAsync(int numeroNfTransferencia, string filial, string filialOrigem, DateTime emissao, DateTime dataEntradaConferida);
     }
 }

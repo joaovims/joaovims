@@ -6,7 +6,7 @@ namespace RetroagirNfEntrada.Models
     {
         public NotaFiscal() { }
 
-        public NotaFiscal(int numeroNfTransferencia, int filial, int filialOrigem, decimal valorTotal, int qtdeTotal, DateTime emissao, DateTime dataEntradaConferencia)
+        public NotaFiscal(int numeroNfTransferencia, string filial, string filialOrigem, decimal valorTotal, int qtdeTotal, DateTime emissao, DateTime dataEntradaConferencia)
         {
             NumeroNfTransferencia = numeroNfTransferencia;
             Filial = filial;
@@ -23,10 +23,10 @@ namespace RetroagirNfEntrada.Models
         public int NumeroNfTransferencia { get; set; }
 
         [Display(Name = "Filial")]
-        public int Filial { get; set; }
+        public string Filial { get; set; } = string.Empty;
 
         [Display(Name = "Filial Origem")]
-        public int FilialOrigem { get; set; }
+        public string FilialOrigem { get; set; } = string.Empty;
 
         [Display(Name = "Emissão")]
         [DataType(DataType.Date)]
@@ -59,11 +59,11 @@ namespace RetroagirNfEntrada.Models
 
         [Required(ErrorMessage = "A filial é obrigatória")]
         [Display(Name = "Filial")]
-        public int Filial { get; set; }
+        public string Filial { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A filial de origem é obrigatória")]
         [Display(Name = "Filial de Origem")]
-        public int FilialOrigem { get; set; }
+        public string FilialOrigem { get; set; } = string.Empty;
     }
 
     public class RetroacaoNotaViewModel
@@ -72,10 +72,10 @@ namespace RetroagirNfEntrada.Models
         public int NumeroNfTransferencia { get; set; }
 
         [Required(ErrorMessage = "A filial é obrigatória")]
-        public int Filial { get; set; }
+        public string Filial { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A filial de origem é obrigatória")]
-        public int FilialOrigem { get; set; }
+        public string FilialOrigem { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A data de emissão é obrigatória")]
         [Display(Name = "Data de Emissão")]

@@ -32,8 +32,8 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({
                 numeroNfTransferencia: parseInt(numeroNota),
-                filial: parseInt(filial),
-                filialOrigem: parseInt(filialOrigem)
+                filial: filial,
+                filialOrigem: filialOrigem
             }),
             success: function(response) {
                 ocultarLoading();
@@ -72,8 +72,8 @@ $(document).ready(function() {
     function retroagirNota() {
         const formData = {
             numeroNfTransferencia: parseInt($('#hdnNumeroNf').val()),
-            filial: parseInt($('#hdnFilial').val()),
-            filialOrigem: parseInt($('#hdnFilialOrigem').val()),
+            filial: $('#hdnFilial').val(),
+            filialOrigem: $('#hdnFilialOrigem').val(),
             emissao: $('#novaEmissao').val(),
             dataEntradaConferida: $('#novaDataEntrada').val()
         };
