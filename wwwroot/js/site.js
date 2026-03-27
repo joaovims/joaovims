@@ -71,21 +71,30 @@ $(document).ready(function() {
         $('#hdnFilial').val(notaFiscal.filial);
         $('#hdnFilialOrigem').val(notaFiscal.filialOrigem);
 
+        // Armazena as datas atuais do banco e define o max dos inputs
+        const maxEmissao = notaFiscal.emissao ? new Date(notaFiscal.emissao).toISOString().split('T')[0] : '';
+        const maxEntrada = notaFiscal.dataEntradaConferida ? new Date(notaFiscal.dataEntradaConferida).toISOString().split('T')[0] : '';
+        $('#hdnEmissaoAtual').val(maxEmissao);
+        $('#hdnDataEntradaAtual').val(maxEntrada);
+        $('#novaEmissao').attr('max', maxEmissao);
+        $('#novaDataEntrada').attr('max', maxEntrada);
+
         $('#resultadoBusca').removeClass('d-none');
     }
 
     function retroagirNota() {
         const emissao = $('#novaEmissao').val();
         const dataEntrada = $('#novaDataEntrada').val();
-        const hoje = new Date().toISOString().split('T')[0];
+        const emissaoAtual = $('#hdnEmissaoAtual').val();
+        const entradaAtual = $('#hdnDataEntradaAtual').val();
 
-        if (emissao > hoje) {
-            mostrarErroModal('A data de emissão não pode ser superior à data atual.');
+        if (emissao > emissaoAtual) {
+            mostrarErroModal('A nova data de emissão não pode ser maior que a data atual da nota (' + formatarDataBR(emissaoAtual) + ').');
             return;
         }
 
-        if (dataEntrada > hoje) {
-            mostrarErroModal('A data de entrada conferida não pode ser superior à data atual.');
+        if (dataEntrada > entradaAtual) {
+            mostrarErroModal('A nova data de entrada conferida não pode ser maior que a data atual da nota (' + formatarDataBR(entradaAtual) + ').');
             return;
         }
 
@@ -163,6 +172,12 @@ $(document).ready(function() {
     function formatarData(dataString) {
         const data = new Date(dataString);
         return data.toLocaleDateString('pt-BR');
+    }
+
+    function formatarDataBR(yyyy_mm_dd) {
+        if (!yyyy_mm_dd) return '';
+        const [y, m, d] = yyyy_mm_dd.split('-');
+        return `${d}/${m}/${y}`;
     }
 
     function formatarMoeda(valor) {

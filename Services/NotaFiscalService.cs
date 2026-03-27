@@ -70,12 +70,6 @@ namespace RetroagirNfEntrada.Services
             string numeroNfTransferencia, string filial, string filialOrigem,
             DateTime emissao, DateTime dataEntradaConferida)
         {
-            if (emissao.Date > DateTime.Today)
-                throw new Exception("A data de emissão não pode ser superior à data atual.");
-
-            if (dataEntradaConferida.Date > DateTime.Today)
-                throw new Exception("A data de entrada conferida não pode ser superior à data atual.");
-
             if (emissao.Date != dataEntradaConferida.Date)
                 throw new Exception("A data de emissão e a data de entrada conferida devem ser iguais.");
 
@@ -85,6 +79,36 @@ namespace RetroagirNfEntrada.Services
 
                 using var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 await connection.OpenAsync();
+
+                // Busca as datas atuais no banco antes de validar
+                var selectQuery = @"
+                    SELECT emissao, data_entrada_conferida
+                    FROM loja_entradas
+                    WHERE numero_nf_transferencia = @numeronftransferencia
+                      AND filial = @filial
+                      AND filial_origem = @filialorigem
+                      AND entrada_conferida = 1
+                      AND entrada_encerrada = 1";
+
+                using var selectCmd = new SqlCommand(selectQuery, connection);
+                selectCmd.Parameters.AddWithValue("@numeronftransferencia", numeroNfTransferencia);
+                selectCmd.Parameters.AddWithValue("@filial", filial);
+                selectCmd.Parameters.AddWithValue("@filialorigem", filialOrigem);
+
+                using var reader = await selectCmd.ExecuteReaderAsync();
+
+                if (!await reader.ReadAsync())
+                    throw new Exception("Nota fiscal não encontrada ou não elegível para retroação.");
+
+                var emissaoAtual    = reader["emissao"]                == DBNull.Value ? DateTime.MaxValue : Convert.ToDateTime(reader["emissao"]);
+                var entradaAtual    = reader["data_entrada_conferida"] == DBNull.Value ? DateTime.MaxValue : Convert.ToDateTime(reader["data_entrada_conferida"]);
+                reader.Close();
+
+                if (emissao.Date > emissaoAtual.Date)
+                    throw new Exception($"A nova data de emissão ({emissao:dd/MM/yyyy}) não pode ser maior que a data atual da nota ({emissaoAtual:dd/MM/yyyy}).");
+
+                if (dataEntradaConferida.Date > entradaAtual.Date)
+                    throw new Exception($"A nova data de entrada conferida ({dataEntradaConferida:dd/MM/yyyy}) não pode ser maior que a data atual da nota ({entradaAtual:dd/MM/yyyy}).");
 
                 var query = @"
                     UPDATE loja_entradas

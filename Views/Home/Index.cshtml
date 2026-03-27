@@ -415,6 +415,8 @@
                     <input type="hidden" id="hdnNumeroNf" name="NumeroNfTransferencia">
                     <input type="hidden" id="hdnFilial" name="Filial">
                     <input type="hidden" id="hdnFilialOrigem" name="FilialOrigem">
+                    <input type="hidden" id="hdnEmissaoAtual">
+                    <input type="hidden" id="hdnDataEntradaAtual">
 
                     <div class="alert alert-warning rounded-3 d-flex gap-3 mb-4 small">
                         <i class="fas fa-circle-exclamation mt-1 flex-shrink-0"></i>
@@ -428,16 +430,14 @@
                         <label for="novaEmissao" class="form-label">
                             Nova Data de Emissão <span class="required-mark">*</span>
                         </label>
-                        <input type="date" class="form-control" id="novaEmissao" name="Emissao"
-                               max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                        <input type="date" class="form-control" id="novaEmissao" name="Emissao" required>
                     </div>
 
                     <div class="mb-1">
                         <label for="novaDataEntrada" class="form-label">
                             Nova Data Entrada Conferida <span class="required-mark">*</span>
                         </label>
-                        <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida"
-                               max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                        <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida" required>
                     </div>
 
                 </div>
