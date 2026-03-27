@@ -14,7 +14,7 @@ namespace RetroagirNfEntrada.Services
             _logger = logger;
         }
 
-        public async Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(int numeroNfTransferencia, string filial, string filialOrigem)
+        public async Task<NotaFiscal?> BuscarPorNumeroEFilialAsync(string numeroNfTransferencia, string filial, string filialOrigem)
         {
             try
             {
@@ -48,11 +48,11 @@ namespace RetroagirNfEntrada.Services
                 if (await reader.ReadAsync())
                 {
                     return new NotaFiscal(
-                        reader["numero_nf_transferencia"] == DBNull.Value ? 0            : Convert.ToInt32(reader["numero_nf_transferencia"]),
-                        reader["filial"]                  == DBNull.Value ? string.Empty : Convert.ToString(reader["filial"])!,
-                        reader["filial_origem"]           == DBNull.Value ? string.Empty : Convert.ToString(reader["filial_origem"])!,
-                        reader["valor_total"]             == DBNull.Value ? 0m           : Convert.ToDecimal(reader["valor_total"]),
-                        reader["qtde_total"]              == DBNull.Value ? 0            : Convert.ToInt32(reader["qtde_total"]),
+                        reader["numero_nf_transferencia"] == DBNull.Value ? string.Empty  : Convert.ToString(reader["numero_nf_transferencia"])!,
+                        reader["filial"]                  == DBNull.Value ? string.Empty  : Convert.ToString(reader["filial"])!,
+                        reader["filial_origem"]           == DBNull.Value ? string.Empty  : Convert.ToString(reader["filial_origem"])!,
+                        reader["valor_total"]             == DBNull.Value ? 0m            : Convert.ToDecimal(reader["valor_total"]),
+                        reader["qtde_total"]              == DBNull.Value ? 0             : Convert.ToInt32(reader["qtde_total"]),
                         reader["emissao"]                 == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader["emissao"]),
                         reader["data_entrada_conferida"]  == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader["data_entrada_conferida"]));
                 }
@@ -67,9 +67,18 @@ namespace RetroagirNfEntrada.Services
         }
 
         public async Task<bool> AtualizarDatasAsync(
-            int numeroNfTransferencia, string filial, string filialOrigem,
+            string numeroNfTransferencia, string filial, string filialOrigem,
             DateTime emissao, DateTime dataEntradaConferida)
         {
+            if (emissao.Date > DateTime.Today)
+                throw new Exception("A data de emissão não pode ser superior à data atual.");
+
+            if (dataEntradaConferida.Date > DateTime.Today)
+                throw new Exception("A data de entrada conferida não pode ser superior à data atual.");
+
+            if (emissao.Date != dataEntradaConferida.Date)
+                throw new Exception("A data de emissão e a data de entrada conferida devem ser iguais.");
+
             try
             {
                 _logger.LogInformation("Retroagindo NF {Numero} filial {Filial}", numeroNfTransferencia, filial);

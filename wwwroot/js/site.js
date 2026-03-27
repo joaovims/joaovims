@@ -13,6 +13,11 @@ $(document).ready(function() {
         retroagirNota();
     });
 
+    // Auto-replicar data de emissão para data de entrada conferida
+    $('#novaEmissao').on('change', function() {
+        $('#novaDataEntrada').val($(this).val());
+    });
+
     function buscarNotaFiscal() {
         const numeroNota = $('#NumeroNfTransferencia').val().trim();
         const filial = $('#Filial').val().trim();
@@ -31,7 +36,7 @@ $(document).ready(function() {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                numeroNfTransferencia: parseInt(numeroNota),
+                numeroNfTransferencia: numeroNota,
                 filial: filial,
                 filialOrigem: filialOrigem
             }),
@@ -70,12 +75,31 @@ $(document).ready(function() {
     }
 
     function retroagirNota() {
+        const emissao = $('#novaEmissao').val();
+        const dataEntrada = $('#novaDataEntrada').val();
+        const hoje = new Date().toISOString().split('T')[0];
+
+        if (emissao > hoje) {
+            mostrarErroModal('A data de emissão não pode ser superior à data atual.');
+            return;
+        }
+
+        if (dataEntrada > hoje) {
+            mostrarErroModal('A data de entrada conferida não pode ser superior à data atual.');
+            return;
+        }
+
+        if (emissao !== dataEntrada) {
+            mostrarErroModal('A data de emissão e a data de entrada conferida devem ser iguais.');
+            return;
+        }
+
         const formData = {
-            numeroNfTransferencia: parseInt($('#hdnNumeroNf').val()),
+            numeroNfTransferencia: $('#hdnNumeroNf').val(),
             filial: $('#hdnFilial').val(),
             filialOrigem: $('#hdnFilialOrigem').val(),
-            emissao: $('#novaEmissao').val(),
-            dataEntradaConferida: $('#novaDataEntrada').val()
+            emissao: emissao,
+            dataEntradaConferida: dataEntrada
         };
 
         $('#btnConfirmarRetroacao').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processando...');
@@ -86,7 +110,7 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify(formData),
             success: function(response) {
-                $('#btnConfirmarRetroacao').prop('disabled', false).html('<i class="fas fa-clock"></i> Confirmar Retroação');
+                $('#btnConfirmarRetroacao').prop('disabled', false).html('<i class="fas fa-clock me-2"></i> Confirmar Retroação');
 
                 if (response.success) {
                     $('#modalRetroacao').modal('hide');
@@ -97,7 +121,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                $('#btnConfirmarRetroacao').prop('disabled', false).html('<i class="fas fa-clock"></i> Confirmar Retroação');
+                $('#btnConfirmarRetroacao').prop('disabled', false).html('<i class="fas fa-clock me-2"></i> Confirmar Retroação');
                 mostrarErroModal('Erro ao retroagir nota fiscal: ' + error);
             }
         });

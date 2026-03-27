@@ -242,21 +242,6 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label asp-for="Filial" class="form-label">
-                            Filial <span class="required-mark">*</span>
-                            <i class="fas fa-circle-info tooltip-icon"
-                               data-bs-toggle="tooltip"
-                               data-bs-placement="top"
-                               data-bs-title="Informe o código ou nome exato da filial de destino conforme cadastrado no sistema. Ex: RSV RJ-NORTE SHOPPING"></i>
-                        </label>
-                        <input asp-for="Filial"
-                               class="form-control"
-                               type="text"
-                               placeholder="Digite a filial" />
-                        <span asp-validation-for="Filial" class="text-danger small d-block mt-1"></span>
-                    </div>
-
-                    <div class="col-md-4">
                         <label asp-for="FilialOrigem" class="form-label">
                             Filial de Origem <span class="required-mark">*</span>
                             <i class="fas fa-circle-info tooltip-icon"
@@ -269,6 +254,21 @@
                                type="text"
                                placeholder="Digite a filial de origem" />
                         <span asp-validation-for="FilialOrigem" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Filial" class="form-label">
+                            Filial Destino <span class="required-mark">*</span>
+                            <i class="fas fa-circle-info tooltip-icon"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Informe o código ou nome exato da filial de destino conforme cadastrado no sistema. Ex: RSV RJ-NORTE SHOPPING"></i>
+                        </label>
+                        <input asp-for="Filial"
+                               class="form-control"
+                               type="text"
+                               placeholder="Digite a filial destino" />
+                        <span asp-validation-for="Filial" class="text-danger small d-block mt-1"></span>
                     </div>
                 </div>
 
@@ -326,14 +326,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="data-item">
-                            <div class="data-label">Filial</div>
-                            <div class="data-value" id="dadosFilial">—</div>
+                            <div class="data-label">Filial Origem</div>
+                            <div class="data-value" id="dadosFilialOrigem">—</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="data-item">
-                            <div class="data-label">Filial Origem</div>
-                            <div class="data-value" id="dadosFilialOrigem">—</div>
+                            <div class="data-label">Filial Destino</div>
+                            <div class="data-value" id="dadosFilial">—</div>
                         </div>
                     </div>
                 </div>
@@ -428,14 +428,16 @@
                         <label for="novaEmissao" class="form-label">
                             Nova Data de Emissão <span class="required-mark">*</span>
                         </label>
-                        <input type="date" class="form-control" id="novaEmissao" name="Emissao" required>
+                        <input type="date" class="form-control" id="novaEmissao" name="Emissao"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
                     </div>
 
                     <div class="mb-1">
                         <label for="novaDataEntrada" class="form-label">
                             Nova Data Entrada Conferida <span class="required-mark">*</span>
                         </label>
-                        <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida" required>
+                        <input type="date" class="form-control" id="novaDataEntrada" name="DataEntradaConferida"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
                     </div>
 
                 </div>

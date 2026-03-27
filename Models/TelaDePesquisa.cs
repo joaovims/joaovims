@@ -6,7 +6,7 @@ namespace RetroagirNfEntrada.Models
     {
         public NotaFiscal() { }
 
-        public NotaFiscal(int numeroNfTransferencia, string filial, string filialOrigem, decimal valorTotal, int qtdeTotal, DateTime emissao, DateTime dataEntradaConferencia)
+        public NotaFiscal(string numeroNfTransferencia, string filial, string filialOrigem, decimal valorTotal, int qtdeTotal, DateTime emissao, DateTime dataEntradaConferencia)
         {
             NumeroNfTransferencia = numeroNfTransferencia;
             Filial = filial;
@@ -20,9 +20,9 @@ namespace RetroagirNfEntrada.Models
         public int Id { get; set; }
 
         [Display(Name = "Número da Nota")]
-        public int NumeroNfTransferencia { get; set; }
+        public string NumeroNfTransferencia { get; set; } = string.Empty;
 
-        [Display(Name = "Filial")]
+        [Display(Name = "Filial Destino")]
         public string Filial { get; set; } = string.Empty;
 
         [Display(Name = "Filial Origem")]
@@ -48,17 +48,17 @@ namespace RetroagirNfEntrada.Models
     {
         public BuscaNotaFiscalViewModel() { }
 
-        public BuscaNotaFiscalViewModel(int numeroNfTransferencia)
+        public BuscaNotaFiscalViewModel(string numeroNfTransferencia)
         {
             NumeroNfTransferencia = numeroNfTransferencia;
         }
 
         [Required(ErrorMessage = "O número da nota fiscal é obrigatório")]
         [Display(Name = "Número da Nota Fiscal")]
-        public int NumeroNfTransferencia { get; set; }
+        public string NumeroNfTransferencia { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A filial é obrigatória")]
-        [Display(Name = "Filial")]
+        [Required(ErrorMessage = "A filial destino é obrigatória")]
+        [Display(Name = "Filial Destino")]
         public string Filial { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A filial de origem é obrigatória")]
@@ -69,9 +69,9 @@ namespace RetroagirNfEntrada.Models
     public class RetroacaoNotaViewModel
     {
         [Required(ErrorMessage = "O número da nota fiscal é obrigatório")]
-        public int NumeroNfTransferencia { get; set; }
+        public string NumeroNfTransferencia { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A filial é obrigatória")]
+        [Required(ErrorMessage = "A filial destino é obrigatória")]
         public string Filial { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A filial de origem é obrigatória")]
